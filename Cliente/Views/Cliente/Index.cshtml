@@ -1,0 +1,150 @@
+﻿@model IEnumerable<ClienteViewModel>
+
+<div class="card text-primary">
+    <div class="card-header text-center">
+        <h5>Lista</h5>
+    </div>
+    <div class="card-body">
+        <div class="row mb-3">
+            <div class="col-md-2">
+                <input type="text" class="form-control" id="txtId" placeholder="ID">
+            </div>
+            <div class="col-md-3">
+                <input type="text" class="form-control" id="txtNombreApellido" placeholder="Nombre o Apellido">
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-primary" onclick="aplicarFiltros()">Filtrar</button>
+            </div>
+            <div class="col-md-2">
+                <button class="btn btn-secondary" onclick="limpiarFiltros()">Limpiar</button>
+            </div>
+        </div>
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <a asp-action="Create" class="btn btn-outline-primary btn-sm">Crear Nuevo</a>
+                <hr />
+                <h5 class="panel-title">Cliente</h5>
+            </div>
+            <div class="panel-body">
+                <table class="table table-hover table-responsive table-striped" id="MyTable">
+                    <thead>
+                        <tr>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Id)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.PrimerNombre)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.SegundoNombre)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.PrimerApellido)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.SegundoApellido)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.FechaNacimiento)
+                            </th>
+                            <th>
+                                @Html.DisplayNameFor(model => model.Sueldo)
+                            </th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Id)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PrimerNombre)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SegundoNombre)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.PrimerApellido)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.SegundoApellido)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.FechaNacimiento)
+                                </td>
+                                <td>
+                                    @Html.DisplayFor(modelItem => item.Sueldo)
+                                </td>
+                                <td>
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-warning btn-sm">Editar</a>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info btn-sm">Detalles</a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger btn-sm">Eliminar</a>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer text-muted text-center">
+        Crud
+    </div>
+</div>
+
+<script>
+    function aplicarFiltros() {
+        var id = document.getElementById('txtId').value.trim().toUpperCase();
+        var nombreApellido = document.getElementById('txtNombreApellido').value.trim().toUpperCase();
+        var table = document.getElementById('MyTable');
+        var rows = table.getElementsByTagName('tr');
+        for (var i = 0; i < rows.length; i++) {
+            var idCell = rows[i].getElementsByTagName('td')[0];
+            var nombreApellidoCell = rows[i].getElementsByTagName('td')[1];
+            var apellidoCell = rows[i].getElementsByTagName('td')[3];
+            if (idCell && nombreApellidoCell && apellidoCell) {
+                var txtValueId = idCell.textContent || idCell.innerText;
+                var txtValueNombreApellido = nombreApellidoCell.textContent || nombreApellidoCell.innerText;
+                var txtValueApellido = apellidoCell.textContent || apellidoCell.innerText;
+                if ((txtValueId.includes(id) || id === '') &&
+                    (txtValueNombreApellido.toUpperCase().includes(nombreApellido) || txtValueApellido.toUpperCase().includes(nombreApellido))) {
+                    rows[i].style.display = '';
+                } else {
+                    rows[i].style.display = 'none';
+                }
+            }
+        }
+    }
+
+    function limpiarFiltros() {
+        document.getElementById('txtId').value = '';
+        document.getElementById('txtNombreApellido').value = '';
+        aplicarFiltros();
+    }
+
+    function validarSueldo() {
+        var sueldoInput = document.getElementById('sueldo');
+        var sueldo = parseFloat(sueldoInput.value);
+        if (sueldo <= 0 || isNaN(sueldo)) {
+            sueldoInput.setCustomValidity('El sueldo debe ser mayor que 0.');
+        } else {
+            sueldoInput.setCustomValidity('');
+        }
+    }
+
+    function validarFechaNacimiento() {
+        var fechaNacimientoInput = document.getElementById('fechaNacimiento');
+        var fechaNacimiento = new Date(fechaNacimientoInput.value);
+        var hoy = new Date();
+        if (fechaNacimiento > hoy) {
+            fechaNacimientoInput.setCustomValidity('La fecha de nacimiento no puede ser posterior a hoy.');
+        } else {
+            fechaNacimientoInput.setCustomValidity('');
+        }
+    }
+
+    document.getElementById('fechaNacimiento').addEventListener('change', validarFechaNacimiento);
+</script>
